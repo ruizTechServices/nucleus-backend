@@ -196,6 +196,10 @@ Important properties:
 #### Screenshot / desktop-state
 Read-only perception tool.
 
+Recommended operations:
+- `screenshot.capture`
+- `desktop.get_state`
+
 Expected properties:
 - structured result envelope
 - optional metadata about active window/monitor where practical

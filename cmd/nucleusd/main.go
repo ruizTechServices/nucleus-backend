@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	nucleusruntime "nucleus-backend/internal/runtime"
+	nucleusruntime "github.com/ruizTechServices/nucleus-backend/internal/runtime"
 )
 
 func main() {

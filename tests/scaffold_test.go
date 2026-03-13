@@ -5,10 +5,10 @@ import (
 	"strings"
 	"testing"
 
-	"nucleus-backend/internal/rpc"
-	"nucleus-backend/internal/tools/filesystem"
-	"nucleus-backend/internal/tools/screenshot"
-	"nucleus-backend/internal/tools/terminal"
+	"github.com/ruizTechServices/nucleus-backend/internal/rpc"
+	"github.com/ruizTechServices/nucleus-backend/internal/tools/filesystem"
+	"github.com/ruizTechServices/nucleus-backend/internal/tools/screenshot"
+	"github.com/ruizTechServices/nucleus-backend/internal/tools/terminal"
 )
 
 func TestRPCRequestUsesJSONRPCVersion(t *testing.T) {

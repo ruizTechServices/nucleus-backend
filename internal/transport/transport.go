@@ -3,7 +3,7 @@ package transport
 import (
 	"context"
 
-	"nucleus-backend/internal/rpc"
+	"github.com/ruizTechServices/nucleus-backend/internal/rpc"
 )
 
 type Handler interface {

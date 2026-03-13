@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"nucleus-backend/internal/session"
-	"nucleus-backend/internal/tools"
+	"github.com/ruizTechServices/nucleus-backend/internal/session"
+	"github.com/ruizTechServices/nucleus-backend/internal/tools"
 )
 
 type Request struct {

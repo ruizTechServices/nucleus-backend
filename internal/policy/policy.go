@@ -3,7 +3,7 @@ package policy
 import (
 	"context"
 
-	"nucleus-backend/internal/session"
+	"github.com/ruizTechServices/nucleus-backend/internal/session"
 )
 
 type Decision string

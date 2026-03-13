@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"nucleus-backend/internal/session"
+	"github.com/ruizTechServices/nucleus-backend/internal/session"
 )
 
 type ExecutionRecord struct {

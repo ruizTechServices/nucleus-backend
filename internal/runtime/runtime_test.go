@@ -5,14 +5,14 @@ import (
 	"testing"
 	"time"
 
-	"nucleus-backend/internal/audit"
-	"nucleus-backend/internal/executor"
-	"nucleus-backend/internal/policy"
-	"nucleus-backend/internal/rpc"
-	"nucleus-backend/internal/session"
-	"nucleus-backend/internal/storage"
-	"nucleus-backend/internal/tools"
-	"nucleus-backend/internal/transport"
+	"github.com/ruizTechServices/nucleus-backend/internal/audit"
+	"github.com/ruizTechServices/nucleus-backend/internal/executor"
+	"github.com/ruizTechServices/nucleus-backend/internal/policy"
+	"github.com/ruizTechServices/nucleus-backend/internal/rpc"
+	"github.com/ruizTechServices/nucleus-backend/internal/session"
+	"github.com/ruizTechServices/nucleus-backend/internal/storage"
+	"github.com/ruizTechServices/nucleus-backend/internal/tools"
+	"github.com/ruizTechServices/nucleus-backend/internal/transport"
 )
 
 type stubTransport struct{}
