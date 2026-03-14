@@ -22,23 +22,23 @@ The backend is acceptable only if all of the following remain true:
 
 ---
 
-## Phase 1 — Repository and runtime scaffold
+## Phase 1 - Repository and runtime scaffold
 
 ### Required outcomes
-- Go module initialized
-- `cmd/nucleusd` entrypoint exists
-- internal package boundaries exist for core subsystems
-- project builds successfully
-- README or run instructions exist for the scaffold
+- [x] Go module initialized
+- [x] `cmd/nucleusd` entrypoint exists
+- [x] internal package boundaries exist for core subsystems
+- [x] project builds successfully
+- [x] README or run instructions exist for the scaffold
 
 ### Acceptance checks
-- repository compiles without frontend code
-- package structure reflects architectural separation
-- no generic web-server architecture has replaced the intended sidecar design
+- [x] repository compiles without frontend code
+- [x] package structure reflects architectural separation
+- [x] no generic web-server architecture has replaced the intended sidecar design
 
 ---
 
-## Phase 2 — Transport and protocol skeleton
+## Phase 2 - Transport and protocol skeleton
 
 ### Required outcomes
 - local transport abstraction exists
@@ -54,7 +54,7 @@ The backend is acceptable only if all of the following remain true:
 
 ---
 
-## Phase 3 — Session bootstrap and validation
+## Phase 3 - Session bootstrap and validation
 
 ### Required outcomes
 - `session.bootstrap` exists
@@ -70,7 +70,7 @@ The backend is acceptable only if all of the following remain true:
 
 ---
 
-## Phase 4 — Persistence foundation
+## Phase 4 - Persistence foundation
 
 ### Required outcomes
 - append-only event persistence exists
@@ -87,7 +87,7 @@ The backend is acceptable only if all of the following remain true:
 
 ---
 
-## Phase 5 — Policy engine
+## Phase 5 - Policy engine
 
 ### Required outcomes
 - allow/deny/approval-required decision model exists
@@ -106,7 +106,7 @@ The backend is acceptable only if all of the following remain true:
 
 ---
 
-## Phase 6 — Tool registry and executor
+## Phase 6 - Tool registry and executor
 
 ### Required outcomes
 - tool registry exists
@@ -123,7 +123,7 @@ The backend is acceptable only if all of the following remain true:
 
 ---
 
-## Phase 7 — Filesystem tool
+## Phase 7 - Filesystem tool
 
 ### Required outcomes
 - `filesystem.list` exists
@@ -141,7 +141,7 @@ The backend is acceptable only if all of the following remain true:
 
 ---
 
-## Phase 8 — Terminal tool
+## Phase 8 - Terminal tool
 
 ### Required outcomes
 - `terminal.start_session` exists
@@ -162,7 +162,7 @@ The backend is acceptable only if all of the following remain true:
 
 ---
 
-## Phase 9 — Screenshot / desktop-state tool
+## Phase 9 - Screenshot / desktop-state tool
 
 ### Required outcomes
 - `screenshot.capture` exists
@@ -177,9 +177,10 @@ The backend is acceptable only if all of the following remain true:
 - permission/session checks occur before execution
 - activity is logged and queryable
 - tests cover at least request routing and result schema behavior for both methods
+
 ---
 
-## Phase 10 — Runtime hardening
+## Phase 10 - Runtime hardening
 
 ### Required outcomes
 - graceful shutdown behavior exists
@@ -201,7 +202,7 @@ The backend is acceptable only if all of the following remain true:
 V1 is complete only when all of the following are true:
 
 ### Core runtime
-- [ ] Go sidecar builds and runs locally
+- [x] Go sidecar builds and runs locally
 - [ ] local IPC transport is used by default
 - [ ] JSON-RPC 2.0 style routing is implemented
 - [ ] request pipeline is preserved
@@ -211,7 +212,7 @@ V1 is complete only when all of the following are true:
 - [ ] unauthenticated requests are rejected
 - [ ] deny-by-default policy is enforced
 - [ ] risky actions can require approval
-- [ ] no default internet-facing API is required
+- [x] no default internet-facing API is required
 
 ### Persistence
 - [ ] append-only event history exists
@@ -226,5 +227,5 @@ V1 is complete only when all of the following are true:
 ### Quality
 - [ ] tests cover key pipeline and tool behaviors
 - [ ] docs are updated to match implementation
-- [ ] backend remains frontend-agnostic
-- [ ] implementation is modular and suitable for future adapters
+- [x] backend remains frontend-agnostic
+- [x] implementation is modular and suitable for future adapters
