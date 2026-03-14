@@ -165,16 +165,18 @@ The backend is acceptable only if all of the following remain true:
 ## Phase 9 — Screenshot / desktop-state tool
 
 ### Required outcomes
-- screenshot/desktop-state capability exists
-- capability is modeled as read-only
+- `screenshot.capture` exists
+- `desktop.get_state` exists
+- both capabilities are modeled as read-only
 - structured results are returned
 - event persistence exists for usage
 
 ### Acceptance checks
-- capability can be invoked successfully in supported environments
+- `screenshot.capture` can be invoked successfully in supported environments
+- `desktop.get_state` can be invoked successfully in supported environments
 - permission/session checks occur before execution
 - activity is logged and queryable
-- tests cover at least request routing and result schema behavior
+- tests cover at least request routing and result schema behavior for both methods
 
 ---
 
