@@ -82,6 +82,8 @@ Recommended namespaces:
 - `session.*`
 - `tools.*`
 - `terminal.*`
+- `screenshot.*`
+- `desktop.*`
 - `logs.*`
 - `approvals.*`
 
@@ -335,6 +337,9 @@ Ends a managed terminal session.
 ```
 
 ---
+
+---
+
 ## Screenshot / desktop-state methods
 
 ### `screenshot.capture`
@@ -393,7 +398,7 @@ Returns lightweight desktop/window/display metadata in supported environments.
     }
   }
 }
----
+```
 
 ## Approvals
 
@@ -473,6 +478,9 @@ Example:
   }
 }
 ```
+
+---
+
 
 ---
 
