@@ -177,7 +177,6 @@ The backend is acceptable only if all of the following remain true:
 - permission/session checks occur before execution
 - activity is logged and queryable
 - tests cover at least request routing and result schema behavior for both methods
-
 ---
 
 ## Phase 10 — Runtime hardening

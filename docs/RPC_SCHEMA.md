@@ -365,6 +365,35 @@ Captures a screenshot in supported environments.
 ```
 
 ---
+### `desktop.get_state`
+Returns lightweight desktop/window/display metadata in supported environments.
+
+#### Request params
+- `session_token`
+
+#### Result example
+```json
+{
+  "ok": true,
+  "data": {
+    "execution_id": "exec_790",
+    "tool_name": "desktop.get_state",
+    "result": {
+      "active_window": {
+        "title": "Visual Studio Code",
+        "app_name": "Code"
+      },
+      "displays": [
+        {
+          "display_id": "primary",
+          "width": 1920,
+          "height": 1080
+        }
+      ]
+    }
+  }
+}
+---
 
 ## Approvals
 
