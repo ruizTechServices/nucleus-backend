@@ -1,0 +1,5 @@
+nucleusd.exe
+*.exe
+/bin/
+/dist/
+/build/

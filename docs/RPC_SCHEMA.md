@@ -335,6 +335,36 @@ Ends a managed terminal session.
 ```
 
 ---
+## Screenshot / desktop-state methods
+
+### `screenshot.capture`
+Captures a screenshot in supported environments.
+
+#### Request params
+- `session_token`
+- `display_id` (optional)
+
+#### Result example
+```json
+{
+  "ok": true,
+  "data": {
+    "execution_id": "exec_789",
+    "tool_name": "screenshot.capture",
+    "result": {
+      "capture_id": "cap_123",
+      "mime_type": "image/png",
+      "width": 1920,
+      "height": 1080,
+      "metadata": {
+        "display_id": "primary"
+      }
+    }
+  }
+}
+```
+
+---
 
 ## Approvals
 
