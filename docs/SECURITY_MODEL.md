@@ -45,6 +45,11 @@ transport -> auth/session -> policy -> tool registry -> executor
 
 No subsystem should bypass policy.
 
+Current implementation status:
+- authenticated operational requests are evaluated by a deny-by-default policy engine before handler execution continues
+- the current engine supports allow, deny, and approval-required decisions
+- policy evaluation currently covers tool/action rules plus path, timeout, and command attributes
+
 ### 4. Least privilege
 The runtime should run as the current user without requiring admin/root by default.
 
@@ -122,6 +127,11 @@ Avoid starting with:
 - arbitrary write surfaces
 - recursive destructive operations
 
+Current implementation status:
+- `filesystem.list` and `filesystem.read` execute through the standard auth -> policy -> registry -> executor pipeline
+- tool handlers require absolute paths, normalize them before access, and enforce configured allowed-root scope checks
+- out-of-scope access returns a structured denial and malformed paths return structured validation errors
+
 ---
 
 ## Terminal security rules
@@ -155,6 +165,13 @@ Even if command input remains string-based initially, execution must remain:
 - policy-aware
 - session-scoped
 
+Current implementation status:
+- terminal lifecycle is implemented with `terminal.start_session`, `terminal.exec`, and `terminal.end_session`
+- terminal sessions are managed in-memory and scoped to the authenticated runtime session that created them
+- commands execute directly as binaries/arguments rather than through `cmd /c`, `powershell -Command`, `sh -c`, or similar shell wrappers
+- `terminal.end_session` cancels active command contexts so session cleanup does not leave intentional long-running commands behind by default
+- terminal service shutdown also cancels active command contexts and marks live in-memory sessions ended when the runtime is terminating
+
 ---
 
 ## Screenshot / desktop-state security rules
@@ -166,6 +183,12 @@ Even if command input remains string-based initially, execution must remain:
 - constrain scope where possible
 
 V1 should avoid expanding this into broad desktop control.
+
+Current implementation status:
+- `screenshot.capture` and `desktop.get_state` execute through the standard auth -> policy -> registry -> executor pipeline
+- both capabilities are read-only and return structured metadata/results rather than control primitives
+- screenshot usage and desktop-state usage are persisted in audit history and execution state
+- the built-in adapters currently target Windows; unsupported platforms require a different provider or return execution failure
 
 ---
 
@@ -185,6 +208,10 @@ Examples of actions likely to require approval in V1:
 - high-risk command execution
 - access outside previously approved filesystem scope
 - screenshot capture if not preapproved
+
+Current implementation status:
+- approval-required policy decisions are surfaced as structured runtime errors with approval metadata
+- approval-required requests are also persisted in local state and audit storage when those persistence layers are configured
 
 ---
 
@@ -228,6 +255,14 @@ Avoid:
 - public ports
 - silent fallback to insecure transport
 
+Current implementation status:
+- local IPC is the default runtime transport
+- Windows uses Named Pipes with local-only rejection of remote pipe clients
+- macOS/Linux use Unix Domain Sockets with local socket file hygiene and stale socket cleanup
+- the runtime does not fall back to localhost TCP or public HTTP listeners for convenience
+- `cmd/nucleusd` emits endpoint/bootstrap startup metadata to the trusted launcher over process stdout rather than network discovery
+- the transport cooperates with runtime shutdown so new requests receive structured shutdown responses before final listener close
+
 ---
 
 ## Process and child-process management
@@ -241,6 +276,12 @@ Required goals:
 - avoid hidden background execution by default
 
 The runtime should not leave behind long-running shell processes after terminal sessions end.
+
+Current implementation status:
+- runtime shutdown stops accepting new requests, invokes configured shutdown hooks, waits for in-flight requests to drain, and closes persistence dependencies afterward
+- graceful IPC listeners stay available during drain so new callers can receive a structured `50301` shutdown response before transport close
+- runtime admission is bounded by a configurable maximum number of concurrent in-flight requests
+- overload and shutdown conditions are surfaced through structured RPC errors rather than silent drops
 
 ---
 

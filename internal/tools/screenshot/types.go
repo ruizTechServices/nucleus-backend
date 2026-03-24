@@ -1,5 +1,7 @@
 package screenshot
 
+const ToolCapture = "screenshot.capture"
+
 type CaptureRequest struct {
 	DisplayID string `json:"display_id,omitempty"`
 }

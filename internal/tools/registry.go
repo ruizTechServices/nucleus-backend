@@ -1,6 +1,10 @@
 package tools
 
-import "context"
+import (
+	"context"
+
+	"github.com/ruizTechServices/nucleus-backend/internal/session"
+)
 
 type Risk string
 
@@ -19,6 +23,7 @@ type Definition struct {
 }
 
 type Call struct {
+	Session   session.Metadata
 	ToolName  string
 	Arguments map[string]any
 }

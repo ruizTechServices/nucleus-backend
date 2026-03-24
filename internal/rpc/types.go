@@ -6,14 +6,14 @@ const Version = "2.0"
 
 type Request struct {
 	JSONRPC string          `json:"jsonrpc"`
-	ID      string          `json:"id"`
+	ID      any             `json:"id,omitempty"`
 	Method  string          `json:"method"`
 	Params  json.RawMessage `json:"params,omitempty"`
 }
 
 type Response struct {
-	JSONRPC string         `json:"jsonrpc"`
-	ID      string         `json:"id"`
+	JSONRPC string          `json:"jsonrpc"`
+	ID      any             `json:"id"`
 	Result  *ResultEnvelope `json:"result,omitempty"`
 	Error   *Error          `json:"error,omitempty"`
 }

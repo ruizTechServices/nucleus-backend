@@ -15,3 +15,8 @@ type Listener interface {
 	Close() error
 	Network() string
 }
+
+type GracefulListener interface {
+	Listener
+	BeginShutdown() error
+}

@@ -96,6 +96,7 @@ A user running Nucleus locally on their own machine through a trusted local clie
 ### Operational model
 - the user launches a client
 - the client starts or connects to the local Nucleus backend
+- the runtime returns local startup metadata such as IPC endpoint and bootstrap material to the trusted launcher out of band
 - the client authenticates/session-bootstrap with the runtime
 - the client discovers available tools
 - the client requests tool execution through structured RPC methods
@@ -246,3 +247,7 @@ The backend V1 should deliver:
 - append-only event persistence
 - SQLite-backed queryable state
 - tests and documentation
+
+### Phase 11 implementation outcome
+
+Phase 11 turns the transport abstraction into the default runtime boundary. The sidecar now uses concrete local IPC transport, with Named Pipes on Windows and Unix Domain Sockets on macOS/Linux, and `cmd/nucleusd` now composes the real runtime stack so a trusted local client can start the sidecar, receive startup metadata, bootstrap a session, and invoke runtime methods over JSON-RPC without any public TCP or HTTP surface. Phase 11 does not add new tool families; it operationalizes the existing runtime through the intended local process boundary.

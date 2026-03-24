@@ -23,6 +23,16 @@ Preferred transport:
 
 This schema does not require public HTTP routes.
 
+Phase 11 uses this schema over a real local IPC boundary instead of an in-process or abstract transport. The current transport uses one request per connection so the request/response contract stays simple and testable: a local client connects, sends one framed JSON-RPC request, receives one framed JSON-RPC response, and disconnects. This phase does not change the method set or envelope shape; it makes the existing schema operational over Named Pipes on Windows and Unix Domain Sockets on macOS/Linux.
+
+Current framing model:
+- 4-byte little-endian payload length
+- one JSON-RPC request payload
+- one JSON-RPC response payload
+- connection closed after the response
+
+Endpoint/bootstrap discovery is intentionally out of band. In the current `cmd/nucleusd` composition, the trusted launcher receives startup JSON on stdout containing the local IPC endpoint and bootstrap token.
+
 ---
 
 ## Envelope format
@@ -249,6 +259,60 @@ Generic tool invocation for tools that do not need specialized lifecycle handlin
 }
 ```
 
+### Filesystem tool result examples
+
+`filesystem.list` returns a normalized absolute path plus structured child entries:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "tool_name": "filesystem.list",
+    "execution_id": "exec_124",
+    "result": {
+      "path": "C:/allowed",
+      "entries": [
+        {
+          "name": "docs",
+          "path": "C:/allowed/docs",
+          "is_dir": true
+        },
+        {
+          "name": "notes.txt",
+          "path": "C:/allowed/notes.txt",
+          "is_dir": false
+        }
+      ]
+    },
+    "metadata": {
+      "entry_count": 2
+    }
+  }
+}
+```
+
+`filesystem.read` returns UTF-8 content for a normalized absolute file path:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "tool_name": "filesystem.read",
+    "execution_id": "exec_125",
+    "result": {
+      "path": "C:/allowed/notes.txt",
+      "content": "hello nucleus",
+      "encoding": "utf-8"
+    },
+    "metadata": {
+      "size_bytes": 13
+    }
+  }
+}
+```
+
+Filesystem arguments are expected to use absolute paths. Relative, malformed, or out-of-scope paths should return structured validation or denial errors.
+
 ---
 
 ## Terminal-specific methods
@@ -313,6 +377,7 @@ Executes a single command within a managed terminal session.
 
 Notes:
 - Each terminal command is modeled as one controlled execution.
+- Commands are executed directly without `cmd /c`, `powershell -Command`, `sh -c`, or similar shell-wrapper passthrough by default.
 - Chained shell composition is discouraged by default unless explicitly supported by policy.
 - Timeout is mandatory or defaulted by runtime policy.
 
@@ -335,6 +400,10 @@ Ends a managed terminal session.
   }
 }
 ```
+
+Notes:
+- ending a terminal session should cancel any active command executions associated with that session
+- terminal session lifecycle changes should be persisted in local state and audit history
 
 ---
 
@@ -362,12 +431,22 @@ Captures a screenshot in supported environments.
       "width": 1920,
       "height": 1080,
       "metadata": {
-        "display_id": "primary"
+        "display_id": "primary",
+        "path": "C:/Users/example/AppData/Local/Temp/nucleus/captures/cap_123.png"
       }
+    },
+    "metadata": {
+      "display_id": "primary",
+      "path": "C:/Users/example/AppData/Local/Temp/nucleus/captures/cap_123.png"
     }
   }
 }
 ```
+
+Notes:
+- current built-in capture support targets Windows through a provider-backed adapter
+- runtime persists screenshot executions through the same execution/audit path used by other tools
+- the capability is read-only; it captures image output and metadata only
 
 ---
 ### `desktop.get_state`
@@ -399,6 +478,11 @@ Returns lightweight desktop/window/display metadata in supported environments.
   }
 }
 ```
+
+Notes:
+- current built-in desktop-state support targets Windows through a provider-backed adapter
+- the capability is read-only and returns active window plus display metadata only
+- runtime persists desktop-state requests through the standard execution/audit path
 
 ## Approvals
 
@@ -462,9 +546,11 @@ Errors should be structured and stable.
 - `401xx` for auth/session failures
 - `403xx` for policy/permission denials
 - `404xx` for unknown tools/sessions/resources
+- `429xx` for resource exhaustion / concurrency backpressure
 - `408xx` for timeouts
 - `422xx` for validation/schema errors
 - `500xx` for runtime/internal failures
+- `503xx` for runtime unavailability such as shutdown
 - `507xx` for storage/persistence failures
 
 Example:
@@ -476,6 +562,25 @@ Example:
     "timeout_ms": 30000,
     "terminal_session_id": "term_123"
   }
+}
+```
+
+Additional runtime hardening examples:
+
+```json
+{
+  "code": 42901,
+  "message": "runtime concurrency limit reached",
+  "data": {
+    "limit": 32
+  }
+}
+```
+
+```json
+{
+  "code": 50301,
+  "message": "runtime is shutting down"
 }
 ```
 

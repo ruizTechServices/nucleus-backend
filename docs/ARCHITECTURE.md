@@ -67,6 +67,8 @@ Preferred transport:
 Preferred protocol model:
 - JSON-RPC 2.0 style envelopes
 
+Phase 11 makes the transport layer concrete and default rather than abstract. The current implementation uses local IPC with one request per connection: a client connects locally, sends one framed JSON-RPC request, receives one framed JSON-RPC response, and the connection closes. On Windows this transport uses Named Pipes, and on macOS/Linux it uses Unix Domain Sockets. The transport layer remains responsible only for local admission, framing, decoding, encoding, and request forwarding into the runtime; it does not absorb session, policy, registry, executor, or persistence logic.
+
 ### 2. Auth / Session
 Responsibilities:
 - bootstrap trusted local sessions
@@ -103,6 +105,22 @@ Responsibilities:
 - guarantee cleanup behavior where required
 
 The executor must be the single disciplined path through which tools run.
+
+### Runtime lifecycle hardening
+The runtime is also responsible for orderly shutdown coordination around the request pipeline.
+
+Current implementation status:
+- new request admission is bounded by a configurable runtime concurrency limit
+- once shutdown begins, new requests are rejected explicitly
+- graceful IPC listeners remain available long enough for new callers to receive a structured shutdown response before final transport close
+- shutdown order is:
+  1. mark the runtime shutting down and begin transport shutdown mode
+  2. trigger configured subsystem shutdown hooks
+  3. wait for in-flight requests to drain while newly admitted requests receive structured shutdown errors
+  4. close the transport listener
+  5. close persistence sinks/stores when possible
+
+This keeps cleanup behavior in the runtime composition layer rather than pushing transport or storage logic down into tools.
 
 ---
 
@@ -238,6 +256,10 @@ It allows:
 - future UI flexibility
 - future protocol adaptability
 
+Current implementation note:
+- explicit `terminal.end_session` remains the canonical lifecycle closure path for persisted terminal-session end state
+- runtime shutdown now cancels active terminal commands and marks in-memory terminal sessions ended, but it does not synthesize additional terminal end projections beyond the normal explicit end-session flow
+
 ---
 
 ## Storage boundary rule
@@ -295,6 +317,10 @@ Preferred V1 operating mode:
 - runtime is started by a trusted client per application session
 - runtime is not installed as a persistent background daemon by default
 - runtime exits cleanly when the client session ends or when explicitly requested
+
+Current implementation note:
+- `cmd/nucleusd` composes the concrete session service, policy engine, registry, executor, audit sink, SQLite store, runtime shutdown hooks, and local IPC listener
+- the process writes startup metadata to stdout so the trusted launcher can discover the IPC endpoint, bootstrap token, and scoped roots without any network discovery layer
 
 This keeps lifecycle reasoning simpler in V1.
 

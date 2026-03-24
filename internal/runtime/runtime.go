@@ -1,6 +1,8 @@
 package runtime
 
 import (
+	"sync"
+
 	"github.com/ruizTechServices/nucleus-backend/internal/audit"
 	"github.com/ruizTechServices/nucleus-backend/internal/executor"
 	"github.com/ruizTechServices/nucleus-backend/internal/policy"
@@ -13,6 +15,8 @@ import (
 const (
 	ServiceName = "nucleusd"
 	Version     = "0.1.0-dev"
+
+	defaultMaxConcurrentRequests = 32
 )
 
 type BuildInfo struct {
@@ -28,11 +32,21 @@ type Dependencies struct {
 	Executor  executor.Runner
 	Audit     audit.EventSink
 	Storage   storage.StateStore
+
+	MaxConcurrentRequests int
+	Shutdowners           []Shutdowner
 }
 
 type Runtime struct {
 	dependencies Dependencies
 	buildInfo    BuildInfo
+
+	maxConcurrentRequests int
+
+	mu           sync.Mutex
+	inFlight     int
+	shuttingDown bool
+	closed       bool
 }
 
 func DefaultBuildInfo() BuildInfo {
@@ -51,9 +65,15 @@ func New(dependencies Dependencies, buildInfo BuildInfo) *Runtime {
 		buildInfo.Version = Version
 	}
 
+	maxConcurrentRequests := dependencies.MaxConcurrentRequests
+	if maxConcurrentRequests <= 0 {
+		maxConcurrentRequests = defaultMaxConcurrentRequests
+	}
+
 	return &Runtime{
-		dependencies: dependencies,
-		buildInfo:    buildInfo,
+		dependencies:          dependencies,
+		buildInfo:             buildInfo,
+		maxConcurrentRequests: maxConcurrentRequests,
 	}
 }
 
